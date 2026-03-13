@@ -1,10 +1,42 @@
-﻿
-<!DOCTYPE html>
-    <html>
-    <head>
-        <title></title>
-    </head>
-    <body>
-    Student
-    </body>
-    </html>
+﻿@model IEnumerable<Student>
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var date = DateTime.Now;
+    var isActive = false;
+    var num = 20;
+}
+
+@foreach(var student in Model)
+{
+    <div>
+        <p>Id: @student.Id</p>
+        <p>Name: @student.Name</p>
+        <p>Age: @student.Age</p>
+    </div>
+}
+@if (isActive == true)
+{
+    <p>IsAactive: Active</p>
+}
+else
+{
+    <p>IsActive: Inactive</p>
+}
+
+@for(int i=0; i<num; i+=2) // i = i + 2
+{
+    <h6>@i</h6>
+}
+
+<h1>Index @date</h1>
+
+@{
+    var date2 = DateTime.UtcNow;
+    for (int i = 0; i < 100; i += 5)
+    {
+        <h6>@i</h6>
+    }
+
+    <h4>@date2</h4>
+}

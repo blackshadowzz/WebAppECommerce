@@ -5,32 +5,33 @@ namespace WebAppECommerce.Controllers
 {
     public class StudentController : Controller
     {
-        public IActionResult Index(string? search)
+        public IActionResult Index()
         {
-            List<string> students = new List<string>()
+            List<Student> students = new List<Student>()
             {
-                "John",
-                "Jane",
-                "Jack",
-                "Jill"
+                new Student() {Id=1, Name="Bala ", Age=20 },
+                new Student() {Id=2, Name="Bala 1", Age=20 },
+                new Student() {Id=3, Name="Bala 2", Age=20 },
+                new Student() {Id=4, Name="Bala 3", Age=20 }
             };
-            students = students.Where(
-
-                x => x.ToLower().Contains(search?.ToLower() ?? string.Empty)
-
-                ).ToList();
-
-            return Ok(students.ToList());
+            return View(students.ToList());
         }
 
-        public IActionResult Details(int age)
+        public IActionResult Create()
         {
-            return Ok(age);
+
+            return View();
         }
 
-        public IActionResult Edit(Product product)
+        public IActionResult Details(int id)
         {
-            return Ok(product);
+            return View();
         }
+
+        public IActionResult Report()
+        {
+            return View("Reports/Report");
+        }
+
     }
 }

@@ -1,27 +1,39 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebAppECommerce.Models;
 
 namespace WebAppECommerce.Controllers
 {
     public class HomeController : Controller
     {
         [HttpGet] //GET, POST, PUT, PATCH, DELETE
-        public IActionResult Index()
+        public ViewResult Index()
         {
-
             return View();
         }
-
         //public, private, internal... => access modifiers
         //void 
+        public EmptyResult LogAction()
+        {
+            Console.WriteLine("This Return type EmptyResult");
+            return new EmptyResult();
+        }
 
-        [HttpPost]
+        [HttpGet]
         public IActionResult Edit()
         {
-            return View();
+            return RedirectToAction("Details");
         }
-        public IActionResult Details()
+        public ViewResult Details()
         {
-            return View();
+            var student = new Student
+            {
+                Id = 1,
+                Name = "Sophea",
+                Age = 20
+            };
+
+            return View(student);
         }
+
     }
 }

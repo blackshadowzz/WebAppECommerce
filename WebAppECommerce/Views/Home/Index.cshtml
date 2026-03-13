@@ -1,10 +1,9 @@
-﻿<!DOCTYPE html>
-    <html>
-    <head>
-        <title></title>
-    </head>
-    <body>
-    <p>Hello</p>
-    </body>
-    </html>
-    
+﻿@{
+    var name = "Koko";
+    var age = 20;
+    var date = DateTime.Now;
+}
+
+<p>Name: @name</p>
+<p>Age: @age</p>
+<p>Date: @DateTime.Now.ToLongDateString()</p>

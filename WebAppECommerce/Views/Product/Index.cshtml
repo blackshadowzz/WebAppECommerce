@@ -1,9 +1,7 @@
-﻿<!DOCTYPE html>
-    <html>
-    <head>
-        <title></title>
-    </head>
-    <body>
-    <p>Product</p>
-    </body>
-    </html>
+﻿@{
+    Layout = "_LayoutUser";
+    ViewBag.Title = "Product List";
+}
+<div>
+    <a href="@Url.Action("Create", "Product")" class="btn btn-primary mb-3">Create New Product</a>
+</div>
