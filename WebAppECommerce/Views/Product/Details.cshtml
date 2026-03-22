@@ -1,0 +1,105 @@
+﻿@model Product
+
+@{
+    ViewData["Title"] = "Product Details";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Product Details</h4>
+        </div>
+
+        <div class="card-body">
+            <div class="row">
+
+                <!-- Product Image -->
+                <div class="col-md-4 text-center">
+                    @if (!string.IsNullOrEmpty(Model.ImageUrl))
+                    {
+                        <img src="@Model.ImageUrl" class="img-fluid rounded border"
+                             style="max-height:250px;" />
+                    }
+                    else
+                    {
+                        <img src="/images/no-image.png"
+                             class="img-fluid rounded border"
+                             style="max-height:250px;" />
+                    }
+                </div>
+
+                <!-- Product Information -->
+                <div class="col-md-8">
+
+                    <table class="table table-bordered table-sm">
+                        <tbody>
+
+                            <tr>
+                                <th style="width:30%">Product Name</th>
+                                <td>@Model.ProductName</td>
+                            </tr>
+
+                            <tr>
+                                <th>Description</th>
+                                <td>@Model.Description</td>
+                            </tr>
+
+                            <tr>
+                                <th>Price</th>
+                                <td>$ @Model.Price</td>
+                            </tr>
+
+                            <tr>
+                                <th>Stock Quantity</th>
+                                <td>@Model.StockQty</td>
+                            </tr>
+
+                            <tr>
+                                <th>Category</th>
+                                <td>@Model.Category?.CategoryName</td>
+                            </tr>
+
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    @if (Model.IsActive)
+                                    {
+                                        <span class="badge bg-success">Active</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-danger">Inactive</span>
+                                    }
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <th>Created Date</th>
+                                <td>@Model.CreatedDT?.ToString("yyyy-MM-dd")</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card-footer text-end">
+            <a asp-action="Edit"
+                   asp-route-id="@Model.ProductId"
+                   class="btn btn-warning">
+                Edit
+            </a>
+
+            <a asp-action="Index"
+                   class="btn btn-secondary">
+                Back
+            </a>
+        </div>
+
+    </div>
+
+</div>

@@ -9,7 +9,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionSqlServer"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 var app = builder.Build();
@@ -20,13 +20,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 app.UseHttpsRedirection();
-app.UseRouting();
-
 app.UseStaticFiles();
-
 app.MapStaticAssets();
 
-//app.MapDefaultControllerRoute();
+app.UseRouting();
+app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",

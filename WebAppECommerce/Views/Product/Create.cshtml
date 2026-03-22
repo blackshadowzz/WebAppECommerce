@@ -1,8 +1,129 @@
-﻿
+﻿@model Product
+
 @{
-    ViewData["Title"] = "Create";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = "Create Product";
 }
 
-<h1>Create</h1>
+<div class="container mt-4">
 
+    <div class="card shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Create New Product</h4>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Create"
+                  asp-controller="Product"
+                  method="post"
+                  enctype="multipart/form-data">
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="row g-3">
+
+                    <!-- Product Name -->
+                    <div class="col-md-8">
+                        <label asp-for="ProductName" class="form-label"></label>
+                        <input asp-for="ProductName"
+                               class="form-control"
+                               placeholder="Enter product name" />
+                        <span asp-validation-for="ProductName" class="text-danger"></span>
+                    </div>
+
+                    <!-- Active -->
+                    <div class="col-md-4 d-flex align-items-end">
+                        <div class="form-check">
+                            <input class="form-check-input"
+                            checked
+                                   asp-for="IsActive" />
+                            <label class="form-check-label"
+                                   asp-for="IsActive"></label>
+                        </div>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="col-md-6">
+                        <label asp-for="CategoryId" class="form-label"></label>
+                        <select asp-for="CategoryId"
+                                asp-items="ViewBag.Categories"
+                                class="form-select">
+                            <option value="">-- Select Category --</option>
+                        </select>
+                        <span asp-validation-for="CategoryId" class="text-danger"></span>
+                    </div>
+
+                    <!-- Price -->
+                    <div class="col-md-3">
+                        <label asp-for="Price" class="form-label"></label>
+                        <input asp-for="Price"
+                               type="number"
+                               step="0.01"
+                               class="form-control" />
+                        <span asp-validation-for="Price" class="text-danger"></span>
+                    </div>
+
+                    <!-- Stock -->
+                    <div class="col-md-3">
+                        <label asp-for="StockQty" class="form-label"></label>
+                        <input asp-for="StockQty"
+                               type="number"
+                               class="form-control" />
+                        <span asp-validation-for="StockQty" class="text-danger"></span>
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="col-md-6">
+                        <label asp-for="ImageFile" class="form-label">Product Image</label>
+                        <input asp-for="ImageFile"
+                               type="file"
+                               class="form-control"
+                               accept="image/*"
+                               onchange="previewImage(event)" />
+                    </div>
+
+                    <!-- Image Preview -->
+                    <div class="col-md-6 text-center">
+                        <img id="preview"
+                             src="/images/no-image.png"
+                             class="img-thumbnail"
+                             style="max-height:150px;" />
+                    </div>
+
+                    <!-- Description -->
+                    <div class="col-12">
+                        <label asp-for="Description" class="form-label"></label>
+                        <textarea asp-for="Description"
+                                  class="form-control"
+                                  rows="4"></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+
+                </div>
+
+                <div class="mt-4 d-flex justify-content-end gap-2">
+                    <a asp-action="Index" class="btn btn-secondary">
+                        Cancel
+                    </a>
+
+                    <button type="submit" class="btn btn-success">
+                        Save Product
+                    </button>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+</div>
+<script>
+    function previewImage(event) {
+        var reader = new FileReader();
+        reader.onload = function () {
+            var img = document.getElementById("preview");
+            img.src = reader.result;
+        }
+        reader.readAsDataURL(event.target.files[0]);
+    }
+</script>
