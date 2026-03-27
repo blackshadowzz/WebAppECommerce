@@ -26,13 +26,12 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 app.UseHttpsRedirection();
-app.UseRouting();
-
 app.UseStaticFiles();
-
 app.MapStaticAssets();
 
-//app.MapDefaultControllerRoute();
+app.UseRouting();
+app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",
