@@ -1,7 +1,13 @@
 
 
 using Microsoft.EntityFrameworkCore;
+using WebAppECommerce.Controllers;
 using WebAppECommerce.Data;
+
+var home = new HomeController();
+home.num = 1;
+Console.WriteLine("Home Controller");
+Console.WriteLine(home.num);
 
 var builder = WebApplication.CreateBuilder(args);
 // Configue services or Register Services to container
@@ -9,7 +15,7 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("ConnectionSqlServer"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
 var app = builder.Build();

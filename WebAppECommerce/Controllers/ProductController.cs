@@ -1,36 +1,29 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using WebAppECommerce.Data;
 
 namespace WebAppECommerce.Controllers
 {
-    public class ProductController : Controller
+    public class ProductController(AppDbContext dbContext, IWebHostEnvironment _env) : Controller
     {
 
-        [ActionName("Edit")]
         public IActionResult Index()
         {
-            HelperMethod();
             return View();
         }
 
-        [NonAction]
-        public void HelperMethod()
-        {
-            Console.WriteLine("Non Action");
-            Console.WriteLine("Hello");
-        }
 
-        [NonAction]
-        public int CalculateDiscount(int total)
+        public IActionResult Create()
         {
-            return total > 100 ? 10 : 0;
-        }
 
-        public IActionResult Checkout()
-        {
-            int discount = CalculateDiscount(150);
-            Console.WriteLine($"Discount: {discount}");
-            Console.WriteLine(discount);
-            return View(discount);
+            //ViewBag 
+            ViewBag.Categories = new SelectList(dbContext.Categories.ToList(), "Id", "CategoryName");
+
+            ViewData["Data"] = new List<string> { "Data 1", "Data 2", "Data 3" };
+
+            var categories = dbContext.Categories.ToList();
+            TempData["Message"] = "This is a message from TempData.";
+            return View(categories);
         }
     }
 }

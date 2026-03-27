@@ -1,4 +1,4 @@
-﻿@model WebAppECommerce.Models.Category
+﻿@model Category
 
 @{
     ViewData["Title"] = "Create";
@@ -8,11 +8,11 @@
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Store" method="post">
+        <form asp-action="Store" asp-controller="Category" method="get">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="CategoryName" class="control-label"></label>
-                <input asp-for="CategoryName" class="form-control" />
+                <input asp-for="CategoryName" type="text" class="form-control" />
                 <span asp-validation-for="CategoryName" class="text-danger"></span>
             </div>
             <div class="form-group">
