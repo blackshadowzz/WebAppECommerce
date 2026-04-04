@@ -1,0 +1,171 @@
+﻿@{
+    ViewData["Title"] = "Index";
+    List<Product> sales = ViewBag.Sales as List<Product> ?? new();
+    List<OrderCardDto> cart = ViewBag.Cart as List<OrderCardDto> ?? new();
+    string filter = ViewBag.Filter as string ?? string.Empty;
+    decimal cartTotal = cart.Sum(line => (line.Product.Price ?? 0m) * line.Quantity);
+}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 class="mb-0">Sales</h4>
+        <span class="badge rounded-pill text-bg-light border fs-6">@sales.Count item(s)</span>
+    </div>
+
+    @if (TempData["OrderSuccess"] is string successMessage)
+    {
+        <div class="alert alert-success">@successMessage</div>
+    }
+
+    @if (TempData["OrderError"] is string errorMessage)
+    {
+        <div class="alert alert-danger">@errorMessage</div>
+    }
+
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card shadow-sm border-0 sticky-top" style="top: 1rem;">
+                <div class="card-body border-bottom bg-light-subtle">
+                    <form asp-action="Index" asp-controller="Sales" method="get" class="row g-2 align-items-end">
+                        <div class="col-md-8">
+                            <label for="filter" class="form-label fw-semibold mb-1">Search items</label>
+                            <input id="filter" name="filter" type="text" class="form-control" value="@filter" placeholder="Type item name..." />
+                        </div>
+                        <div class="col-md-4 d-grid">
+                            <button type="submit" class="btn btn-dark">Search</button>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(filter))
+                        {
+                            <div class="col-12">
+                                <a asp-action="Index" asp-controller="Sales" class="btn btn-link p-0">Clear search</a>
+                            </div>
+                        }
+                    </form>
+                </div>
+                <div id="itemList" class="p-3 overflow-auto" style="max-height: calc(100vh - 230px);">
+                    @if (sales.Count == 0)
+                    {
+                        <div class="text-center py-5">
+                            <p class="text-muted mb-0">No matching items found.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="row row-cols-1 row-cols-md-4 g-4">
+                            @foreach (var item in sales)
+                            {
+                                <div class="col">
+                                    <div class="card">
+                                        <img src="@item.ImageUrl" class="card-img-top" alt="...">
+                                        <div class="card-body">
+                                            <div>
+                                                <h5 class="card-title mb-1">@item.ProductName</h5>
+                                                <p class="card-text text-muted mb-0">Price: $@((item.Price ?? 0m).ToString("0.00"))</p>
+                                            </div>
+                                            <span class="badge text-bg-light border">#@item.ProductId</span>
+                                        </div>
+                                        <div class="card-footer bg-transparent border-0 pt-0 pb-3">
+                                            <form asp-action="AddToCart" asp-controller="Orders" method="post">
+                                                <input type="hidden" name="itemId" value="@item.ProductId" />
+                                                <button type="submit" class="btn btn-primary w-100">Add to Cart</button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm sticky-top" style="top: 1rem;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Your Cart</h5>
+                </div>
+                <div class="card-body">
+                    @if (cart.Count == 0)
+                    {
+                        <p class="text-muted mb-0">No items in cart yet.</p>
+                    }
+                    else
+                    {
+                        <ul class="list-group list-group-flush mb-3">
+                            @foreach (var line in cart)
+                            {
+                                <li class="list-group-item px-0">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <img src="@line.Product.ImageUrl" class="rounded float-start" height="70" width="70"/>
+                                        </div>
+                                        <div>
+                                            <div class="fw-semibold">@line.Product.ProductName</div>
+                                            <small class="text-muted">$@((line.Product.Price ?? 0m).ToString("0.00")) each</small>
+                                        </div>
+                                        <div>
+                                            <div class="d-flex align-items-center gap-2 mt-2">
+                                                <form asp-action="RemoveFromCart" asp-controller="Orders" method="post" class="m-0">
+                                                    <input type="hidden" name="itemId" value="@line.Product.ProductId" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-secondary" title="Decrease quantity">-</button>
+                                                </form>
+
+                                                <span class="badge text-bg-light border">Qty: @line.Quantity</span>
+
+                                                <form asp-action="AddToCart" asp-controller="Orders" method="post" class="m-0">
+                                                    <input type="hidden" name="itemId" value="@line.Product.ProductId" />
+                                                    <button type="submit" class="btn btn-sm btn-outline-primary" title="Increase quantity">+</button>
+                                                </form>
+                                            </div>
+                                        </div>
+                                        <span class="fw-semibold">$@(((line.Product.Price ?? 0m) * line.Quantity).ToString("0.00"))</span>
+                                    </div>
+
+
+                                </li>
+                            }
+                        </ul>
+                        <div class="d-flex justify-content-between border-top pt-3">
+                            <span class="fw-bold">Total</span>
+                            <span class="fw-bold text-primary">$@cartTotal.ToString("0.00")</span>
+                        </div>
+
+                        <form asp-action="SaveOrder" asp-controller="Orders" method="post" class="mt-3">
+                            <div class="mb-2">
+                                <label class="form-label mb-1">Customer ID</label>
+                                <input type="text" name="UserId" class="form-control" placeholder="customer_001" />
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label mb-1">Shipping Address</label>
+                                <textarea name="ShippingAddress" class="form-control" rows="2" placeholder="Enter shipping address"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label mb-1">Order Status</label>
+                                <select name="Status" class="form-select">
+                                    <option value="Pending" selected>Pending</option>
+                                    <option value="Paid">Paid</option>
+                                    <option value="Processing">Processing</option>
+                                </select>
+                            </div>
+                            <div class="d-grid gap-2">
+                                <button type="submit"
+                                        onclick="return confirm('Are you sure you want to save this order?');"
+                                        class="btn btn-success">
+                                    Save Order
+                                </button>
+                            </div>
+                        </form>
+
+                        <form asp-action="ClearCart" asp-controller="Orders" method="post" class="mt-2">
+                            <div class="d-grid">
+                                <button type="submit" class="btn btn-outline-secondary">Clear Cart</button>
+                            </div>
+                        </form>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

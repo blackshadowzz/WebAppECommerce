@@ -16,7 +16,22 @@
                 <li class="nav-item">
                     <a class="nav-link" asp-action="Index" asp-controller="Product">Products</a>
                 </li>
-               
+                <li class="nav-item">
+                    <div class="dropdown">
+                        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Orders
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" asp-action="Index" asp-controller="Orders">Create Order</a></li>
+                            <li><a class="dropdown-item" asp-action="List" asp-controller="Orders">Order list</a></li>
+                          
+                           
+                        </ul>
+                    </div>
+                </li>
+                
+                
+
             </ul>
             <form class="d-flex" role="search">
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" />

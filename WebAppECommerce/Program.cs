@@ -1,17 +1,23 @@
 
 
 using Microsoft.EntityFrameworkCore;
-using WebAppECommerce.Controllers;
 using WebAppECommerce.Data;
+using WebAppECommerce.Services;
 
-var home = new HomeController();
-home.num = 1;
-Console.WriteLine("Home Controller");
-Console.WriteLine(home.num);
 
 var builder = WebApplication.CreateBuilder(args);
 // Configue services or Register Services to container
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<IOrderService, OrderService>();
+
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -30,6 +36,9 @@ app.UseStaticFiles();
 app.MapStaticAssets();
 
 app.UseRouting();
+
+app.UseSession();
+
 app.UseAuthorization();
 
 
