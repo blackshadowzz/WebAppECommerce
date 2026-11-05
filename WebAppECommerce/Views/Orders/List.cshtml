@@ -1,0 +1,161 @@
+﻿@model IEnumerable<WebAppECommerce.Models.Order>
+
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+        <div>
+            <h2 class="mb-1">Orders</h2>
+            <p class="text-muted mb-0">Click any order row to view full details and order lines.</p>
+        </div>
+        <a asp-action="Index" class="btn btn-primary">Create New Order</a>
+    </div>
+
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order #</th>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th class="text-end">Items</th>
+                            <th class="text-end">Total Amount</th>
+                            <th>Shipping Address</th>
+                            <th>Order Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="7" class="text-center py-4 text-muted">No orders found.</td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model)
+                            {
+                                var statusClass = (item.Status ?? string.Empty).ToLower() switch
+                                {
+                                    "completed" => "bg-success",
+                                    "pending" => "bg-warning text-dark",
+                                    "cancelled" => "bg-danger",
+                                    _ => "bg-secondary"
+                                };
+
+                                <tr class="order-row" role="button"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#orderDetailsModal"
+                                    data-order-id="@item.OrderId"
+                                    data-order-number="@item.OrderNumber"
+                                    data-user-id="@item.UserId"
+                                    data-status="@item.Status"
+                                    data-items="@item.TotalItem"
+                                    data-total="@((item.TotalAmount ?? 0m).ToString("0.00"))"
+                                    data-shipping="@item.ShippingAddress"
+                                    data-date="@(item.OrderDate?.ToString("dd MMM yyyy HH:mm") ?? "-")">
+                                    <td><strong>#@item.OrderNumber</strong></td>
+                                    <td>@item.UserId</td>
+                                    <td><span class="badge @statusClass">@item.Status</span></td>
+                                    <td class="text-end">@item.TotalItem</td>
+                                    <td class="text-end">$@((item.TotalAmount ?? 0m).ToString("0.00"))</td>
+                                    <td class="text-truncate" style="max-width: 280px;">@item.ShippingAddress</td>
+                                    <td>@(item.OrderDate?.ToString("dd MMM yyyy") ?? "-")</td>
+                                </tr>
+
+                                <tr class="d-none">
+                                    <td colspan="7">
+                                        <div id="order-lines-@item.OrderId">
+                                            @if (item.OrderLines != null && item.OrderLines.Any())
+                                            {
+                                                <div class="table-responsive">
+                                                    <table class="table table-sm table-striped align-middle mb-0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Product Id</th>
+                                                                <th class="text-end">Qty</th>
+                                                                <th class="text-end">Unit Price</th>
+                                                                <th class="text-end">Sub Total</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach (var line in item.OrderLines)
+                                                            {
+                                                                <tr>
+                                                                    <td>@line.ProductId</td>
+                                                                    <td class="text-end">@line.Quantity</td>
+                                                                    <td class="text-end">$@((line.UnitPrice ?? 0m).ToString("0.00"))</td>
+                                                                    <td class="text-end">$@((line.SubTotal ?? 0m).ToString("0.00"))</td>
+                                                                </tr>
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <p class="text-muted mb-0">No order lines available.</p>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderDetailsModalLabel">Order Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-2 mb-3">
+                    <div class="col-md-6"><strong>Order #:</strong> <span id="modalOrderNumber"></span></div>
+                    <div class="col-md-6"><strong>User:</strong> <span id="modalUserId"></span></div>
+                    <div class="col-md-6"><strong>Status:</strong> <span id="modalStatus"></span></div>
+                    <div class="col-md-6"><strong>Items:</strong> <span id="modalItems"></span></div>
+                    <div class="col-md-6"><strong>Total Amount:</strong> $<span id="modalTotal"></span></div>
+                    <div class="col-md-6"><strong>Order Date:</strong> <span id="modalDate"></span></div>
+                    <div class="col-12"><strong>Shipping Address:</strong> <span id="modalShipping"></span></div>
+                </div>
+
+                <h6 class="mb-2">Order Lines</h6>
+                <div id="modalOrderLines"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const orderDetailsModal = document.getElementById('orderDetailsModal');
+
+        orderDetailsModal.addEventListener('show.bs.modal', function (event) {
+            const triggerRow = event.relatedTarget;
+            if (!triggerRow) return;
+
+            const orderId = triggerRow.getAttribute('data-order-id');
+            document.getElementById('modalOrderNumber').textContent = triggerRow.getAttribute('data-order-number') ?? '-';
+            document.getElementById('modalUserId').textContent = triggerRow.getAttribute('data-user-id') ?? '-';
+            document.getElementById('modalStatus').textContent = triggerRow.getAttribute('data-status') ?? '-';
+            document.getElementById('modalItems').textContent = triggerRow.getAttribute('data-items') ?? '0';
+            document.getElementById('modalTotal').textContent = triggerRow.getAttribute('data-total') ?? '0.00';
+            document.getElementById('modalShipping').textContent = triggerRow.getAttribute('data-shipping') ?? '-';
+            document.getElementById('modalDate').textContent = triggerRow.getAttribute('data-date') ?? '-';
+
+            const linesTemplate = document.getElementById(`order-lines-${orderId}`);
+            document.getElementById('modalOrderLines').innerHTML = linesTemplate ? linesTemplate.innerHTML : '<p class="text-muted mb-0">No order lines available.</p>';
+        });
+    </script>
+}

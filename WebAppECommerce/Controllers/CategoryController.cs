@@ -15,7 +15,7 @@ namespace WebAppECommerce.Controllers
 
         public async Task<ActionResult<List<Category>>> Index(string? search)
         {
-            var categories = _context.Categories.AsNoTracking();
+            var categories = _context.TblCategories.AsNoTracking();
             TempData["CurrentFilter"] = search;
             if (!string.IsNullOrEmpty(search))
             {
@@ -25,7 +25,7 @@ namespace WebAppECommerce.Controllers
         }
         public async Task<ActionResult<Category>> Details(int id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            var category = await _context.TblCategories.FirstOrDefaultAsync(x => x.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -43,18 +43,18 @@ namespace WebAppECommerce.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Categories.Add(category);
+                _context.TblCategories.Add(category);
                 await _context.SaveChangesAsync();
                 TempData["Success"] = "Category created successfully.";
                 return RedirectToAction(nameof(Index));
             }
-            return View(category);
+            return View("Create", category);
         }
 
         [HttpGet]
         public async Task<ActionResult<Category>> Edit(int id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            var category = await _context.TblCategories.FirstOrDefaultAsync(x => x.Id == id);
             if (category == null)
             {
                 return NotFound();
@@ -78,7 +78,7 @@ namespace WebAppECommerce.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!await _context.Categories.AnyAsync(x => x.Id == id))
+                    if (!await _context.TblCategories.AnyAsync(x => x.Id == id))
                         return NotFound();
                     else
                         throw;
@@ -92,10 +92,10 @@ namespace WebAppECommerce.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _context.Categories.FirstOrDefaultAsync(x => x.Id == id);
+            var category = await _context.TblCategories.FirstOrDefaultAsync(x => x.Id == id);
             if (category == null)
                 return NotFound();
-            _context.Categories.Remove(category);
+            _context.TblCategories.Remove(category);
             await _context.SaveChangesAsync();
             TempData["Success"] = "Category deleted successfully.";
             return RedirectToAction(nameof(Index));

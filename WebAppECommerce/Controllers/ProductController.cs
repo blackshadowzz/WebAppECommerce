@@ -37,7 +37,7 @@ namespace WebAppECommerce.Controllers
         public IActionResult Create()
         {
             ViewBag.Categories = new SelectList(
-                dbContext.Categories.ToList(),
+                dbContext.TblCategories.ToList(),
                 "Id", "CategoryName"
                 );
             return View();
@@ -86,7 +86,7 @@ namespace WebAppECommerce.Controllers
         public async Task<IActionResult> Edit(int id)
         {
             ViewBag.Categories = new SelectList(
-                dbContext.Categories.ToList(),
+                dbContext.TblCategories.ToList(),
                 "Id", "CategoryName"
                 );
             var result = await dbContext.Products

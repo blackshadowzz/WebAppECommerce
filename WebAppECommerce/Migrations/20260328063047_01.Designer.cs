@@ -12,8 +12,8 @@ using WebAppECommerce.Data;
 namespace WebAppECommerce.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20260313072711_Initialized02")]
-    partial class Initialized02
+    [Migration("20260328063047_01")]
+    partial class _01
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -35,7 +35,7 @@ namespace WebAppECommerce.Migrations
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -45,7 +45,7 @@ namespace WebAppECommerce.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Categories");
+                    b.ToTable("TblCategories");
                 });
 
             modelBuilder.Entity("WebAppECommerce.Models.Product", b =>
@@ -86,6 +86,8 @@ namespace WebAppECommerce.Migrations
 
                     b.HasKey("ProductId");
 
+                    b.HasIndex("CategoryId");
+
                     b.ToTable("Products");
                 });
 
@@ -106,6 +108,15 @@ namespace WebAppECommerce.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Students");
+                });
+
+            modelBuilder.Entity("WebAppECommerce.Models.Product", b =>
+                {
+                    b.HasOne("WebAppECommerce.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId");
+
+                    b.Navigation("Category");
                 });
 #pragma warning restore 612, 618
         }
