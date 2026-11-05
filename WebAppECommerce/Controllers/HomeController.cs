@@ -1,13 +1,26 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using WebAppECommerce.Data;
 using WebAppECommerce.Models;
 
 namespace WebAppECommerce.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(AppDbContext dbContext) : Controller
     {
         [HttpGet] //GET, POST, PUT, PATCH, DELETE
-        public ViewResult Index()
+        public async Task<ViewResult> Index()
         {
+            // id of User is passed from UserController to HomeController
+            var userId = HttpContext.Request.Query["id"].ToString();
+            if (!string.IsNullOrEmpty(userId))
+            {
+                ViewData["UserId"] = userId;
+                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == int.Parse(userId));
+                if (user != null)
+                {
+                    ViewData["Username"] = user.Username;
+                }
+            }
             return View();
         }
         //public, private, internal... => access modifiers
